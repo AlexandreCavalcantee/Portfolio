@@ -136,6 +136,6 @@ background-color: var(--cor-hover);
     }
 
     .apresentacao__conteudo {
-        width: 0;
+        width: auto;
     }
 }
