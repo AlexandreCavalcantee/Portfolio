@@ -286,6 +286,33 @@ body::before {
     position: relative;
     z-index: 1;
     box-shadow: 0 -4px 20px rgba(34, 212, 253, 0.3);
+    margin-top: 60px;
+}
+
+.rodape::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.rodape p {
+    position: relative;
+    z-index: 1;
+    margin: 0;
 }
 
 @media (max-width: 1200px) {
@@ -831,7 +858,7 @@ a {
     position: relative;
 }
 
-a:not(.apresentacao__links__botao):not(.link-projeto)::after {
+a:not(.apresentacao__links__botao):not(.link-projeto):not(.cabecalho__menu__link)::after {
     content: '';
     position: absolute;
     bottom: -2px;
@@ -842,8 +869,30 @@ a:not(.apresentacao__links__botao):not(.link-projeto)::after {
     transition: width 0.3s ease;
 }
 
-a:not(.apresentacao__links__botao):not(.link-projeto):hover::after {
+a:not(.apresentacao__links__botao):not(.link-projeto):not(.cabecalho__menu__link):hover::after {
     width: 100%;
+}
+
+/* Accessibility improvements */
+*:focus-visible {
+    outline: 2px solid var(--cor-tercearia);
+    outline-offset: 4px;
+}
+
+/* Print styles */
+@media print {
+    .cabecalho, .scroll-top, .loader, .cursor-dot, .cursor-outline {
+        display: none !important;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .apresentacao__imagem {
+        display: none;
+    }
 }
 
 
