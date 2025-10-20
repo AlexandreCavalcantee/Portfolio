@@ -731,6 +731,121 @@ body::before {
     box-shadow: 0 3px 10px rgba(34, 212, 253, 0.3);
 }
 
+/* Loading Animation */
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--cor-primaria);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(34, 212, 253, 0.1);
+    border-top: 4px solid var(--cor-tercearia);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Particle Background Effect */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.particle {
+    position: absolute;
+    background: var(--cor-tercearia);
+    border-radius: 50%;
+    animation: float-particle 15s infinite;
+    opacity: 0.1;
+}
+
+@keyframes float-particle {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+    50% {
+        transform: translateY(-100px) translateX(50px);
+    }
+}
+
+/* Custom Cursor Effect */
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--cor-tercearia);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.15s ease;
+    display: none;
+}
+
+.cursor-outline {
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--cor-tercearia);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9997;
+    transition: all 0.2s ease;
+    display: none;
+    opacity: 0.5;
+}
+
+@media (min-width: 1024px) {
+    .cursor-dot,
+    .cursor-outline {
+        display: block;
+    }
+}
+
+/* Enhanced Link Hover States */
+a {
+    position: relative;
+}
+
+a:not(.apresentacao__links__botao):not(.link-projeto)::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--cor-tercearia);
+    transition: width 0.3s ease;
+}
+
+a:not(.apresentacao__links__botao):not(.link-projeto):hover::after {
+    width: 100%;
+}
+
 
 @media (max-width: 1200px) {
 
