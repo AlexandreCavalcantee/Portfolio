@@ -45,7 +45,6 @@ Portfolio/
 ├── scripts/
 │   └── main.js         # JavaScript para interatividade
 ├── assets/
-│   ├── ceruledge.png   # Imagem principal
 │   ├── linkedin.png    # Ícone LinkedIn
 │   ├── github.png      # Ícone GitHub
 │   └── instagram.png   # Ícone Instagram
