@@ -123,6 +123,32 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    slug: "supabase-security-scanner",
+    name: "Supabase Security Scanner",
+    featured: true,
+    year: "2026",
+    summary: {
+      pt: "CLI e GitHub Action que encontram falhas de segurança em projetos Supabase antes do deploy: RLS, policies, funções SECURITY DEFINER e chaves vazadas.",
+      en: "CLI and GitHub Action that find security flaws in Supabase projects before they ship: RLS, policies, SECURITY DEFINER functions and leaked keys.",
+    },
+    highlights: {
+      pt: [
+        "11 regras: tabelas sem RLS, policies using(true), user_metadata, search_path, views que furam RLS",
+        "Procura chaves service_role e outros segredos no JavaScript publicado",
+        "Teste ao vivo com a chave pública; relatório SARIF na aba Security do GitHub",
+        "Fixtures com um schema vulnerável e um seguro, testados no CI",
+      ],
+      en: [
+        "11 rules: tables without RLS, using(true) policies, user_metadata, search_path, RLS-bypassing views",
+        "Hunts for service_role keys and other secrets in the deployed JavaScript",
+        "Live probe with the public key; SARIF report in GitHub's Security tab",
+        "Fixtures with a vulnerable and a secure schema, tested in CI",
+      ],
+    },
+    stack: ["TypeScript", "Node.js", "PostgreSQL", "SARIF", "GitHub Actions"],
+    repo: "https://github.com/AlexandreCavalcantee/supabase-security-scanner",
+  },
+  {
     slug: "supabase-multitenant-saas",
     name: "Supabase Multi-Tenant SaaS",
     featured: true,
@@ -151,7 +177,6 @@ export const projects: Project[] = [
   {
     slug: "checklist-digital",
     name: "Checklist Digital",
-    featured: true,
     year: "2026",
     summary: {
       pt: "Plataforma de checklists e auditorias operacionais com planos de ação, relatórios por setor e exportação CSV.",
