@@ -1,0 +1,124 @@
+---
+import {
+  certifications,
+  education,
+  experience,
+  languages,
+  person,
+  projects,
+  resume,
+  skills,
+  type Lang,
+} from "@/data/profile";
+import { getPosts, postUrl } from "@/lib/blog";
+import { localePath, t } from "@/i18n/ui";
+import type { TermData } from "@/scripts/terminal";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+const posts = await getPosts(lang);
+
+const data: TermData = {
+  lang,
+  altHome: localePath(lang === "pt" ? "en" : "pt"),
+  person: {
+    name: person.name,
+    handle: person.handle,
+    role: person.role[lang],
+    location: person.location[lang],
+    email: person.email,
+    github: person.github,
+    linkedin: person.linkedin,
+    tagline: person.tagline[lang],
+    about: person.about[lang],
+    codingSince: person.codingSince,
+  },
+  experience: experience.map((j) => ({
+    company: j.company,
+    role: j.role[lang],
+    period: j.period[lang],
+    current: j.current,
+    bullets: j.bullets[lang],
+    tags: j.tags,
+  })),
+  education: { school: education.school, degree: education.degree[lang], period: education.period[lang] },
+  projects: projects.map((p) => ({ ...p, summary: p.summary[lang], highlights: p.highlights[lang] })),
+  skills: skills.map((s) => ({ group: s.group[lang], items: s.items })),
+  certifications,
+  languages: languages[lang],
+  posts: posts.map((p) => ({ title: p.data.title, url: postUrl(p), date: p.data.date.toISOString().slice(0, 10) })),
+  resume,
+};
+
+const shortcuts = ["help", "whoami", "projects", "git log", "neofetch", "cube", "contact", "resume"];
+---
+
+<section aria-label={tr("terminal.label")} class="relative">
+  <div
+    data-terminal
+    class="overflow-hidden rounded-xl border border-line bg-panel/95 shadow-[0_0_0_1px_rgb(0_0_0/0.4),0_30px_80px_-20px_rgb(167_139_250/0.25)]"
+  >
+    <div class="flex items-center gap-2 border-b border-line bg-panel-2 px-4 py-2.5">
+      <span class="size-3 rounded-full bg-[#ff5f56]"></span>
+      <span class="size-3 rounded-full bg-[#ffbd2e]"></span>
+      <span class="size-3 rounded-full bg-[#27c93f]"></span>
+      <span class="mx-auto font-mono text-xs text-faint">{person.handle}@portfolio: ~ — zsh</span>
+    </div>
+
+    <div
+      data-screen
+      class="term-screen h-[26rem] overflow-y-auto px-4 py-3 font-mono text-[13px] leading-6 sm:h-[30rem] sm:text-sm"
+    >
+      <div data-out role="log" aria-live="polite"></div>
+      <label class="flex items-center gap-0">
+        <span class="sr-only">{tr("terminal.input")}</span>
+        <span aria-hidden="true" class="shrink-0 whitespace-pre"
+          ><span class="text-green">{person.handle}@portfolio</span><span class="text-faint">:</span><span
+            class="text-purple">~</span
+          ><span class="text-faint">$ </span></span
+        >
+        <input
+          data-input
+          type="text"
+          autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          enterkeyhint="send"
+          class="min-w-0 flex-1 bg-transparent text-fg caret-purple outline-none focus-visible:outline-none"
+        />
+      </label>
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-wrap items-center gap-2 font-mono text-xs">
+    <span class="mr-1 text-faint">{tr("terminal.hint")}</span>
+    {
+      shortcuts.map((cmd) => (
+        <button
+          type="button"
+          data-cmd={cmd}
+          class="rounded-md border border-line bg-panel px-2.5 py-1 text-dim transition-colors hover:border-purple hover:text-fg"
+        >
+          {cmd}
+        </button>
+      ))
+    }
+  </div>
+
+  <script type="application/json" id="terminal-data" set:html={JSON.stringify(data).replace(/</g, "\\u003c")} />
+</section>
+
+<script>
+  import { Terminal, type TermData } from "@/scripts/terminal";
+
+  const root = document.querySelector<HTMLElement>("section:has([data-terminal])");
+  const raw = document.getElementById("terminal-data")?.textContent;
+  if (root && raw) {
+    const term = new Terminal(root, JSON.parse(raw) as TermData);
+    term.boot();
+  }
+</script>

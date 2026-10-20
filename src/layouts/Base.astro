@@ -1,0 +1,127 @@
+---
+import "@/styles/global.css";
+import { person, type Lang } from "@/data/profile";
+import { altPath, localePath, t } from "@/i18n/ui";
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** Path of this page in the other language, when it differs from the mirrored path. */
+  alternate?: string | null;
+  type?: "website" | "article";
+}
+
+const { lang, title, description, type = "website" } = Astro.props;
+const tr = t(lang);
+const pageTitle = title ? `${title} — ${person.name}` : tr("meta.title");
+const pageDescription = description ?? tr("meta.description");
+const path = Astro.url.pathname;
+const other: Lang = lang === "pt" ? "en" : "pt";
+const alternate = Astro.props.alternate === undefined ? altPath(lang, path) : Astro.props.alternate;
+const canonical = new URL(path, Astro.site);
+const ogImage = new URL("/og.png", Astro.site);
+
+const nav = [
+  { href: `${localePath(lang)}#about`, label: tr("nav.about") },
+  { href: `${localePath(lang)}#experience`, label: tr("nav.experience") },
+  { href: `${localePath(lang)}#projects`, label: tr("nav.projects") },
+  { href: localePath(lang, "/blog/"), label: tr("nav.blog") },
+  { href: `${localePath(lang)}#contact`, label: tr("nav.contact") },
+];
+---
+
+<!doctype html>
+<html lang={lang === "pt" ? "pt-BR" : "en"}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
+    {alternate && <link rel="alternate" hreflang={other === "pt" ? "pt-BR" : "en"} href={new URL(alternate, Astro.site)} />}
+    <link rel="alternate" hreflang={lang === "pt" ? "pt-BR" : "en"} href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#0b0e14" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === "pt" ? "pt_BR" : "en_US"} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script is:inline>
+      try {
+        if (localStorage.getItem("crt") === "1") document.documentElement.classList.add("crt");
+      } catch {}
+    </script>
+  </head>
+  <body class="bg-grid min-h-dvh">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded focus:bg-purple focus:px-3 focus:py-2 focus:text-bg"
+      >{tr("skip")}</a
+    >
+
+    <header class="sticky top-0 z-40 border-b border-line/70 bg-bg/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-5xl items-center gap-x-4 px-4 py-3 font-mono text-sm sm:px-6">
+        <a href={localePath(lang)} class="shrink-0 text-dim hover:text-fg">
+          <span class="text-green">{person.handle}@portfolio</span><span class="text-faint">:</span><span
+            class="text-purple">~</span
+          ><span class="text-faint">$</span>
+        </a>
+        <ul class="hidden items-center gap-x-4 md:flex">
+          {
+            nav.map((item) => (
+              <li>
+                <a href={item.href} class="text-dim transition-colors hover:text-fg">
+                  <span class="text-faint">./</span>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a
+          href={alternate ?? localePath(other)}
+          hreflang={other}
+          class="ml-auto rounded border border-line px-2 py-1 text-xs text-dim transition-colors hover:border-purple hover:text-fg"
+          >{tr("lang.switch")}</a
+        >
+      </nav>
+      <ul class="mx-auto flex max-w-5xl gap-x-4 overflow-x-auto px-4 pb-2 font-mono text-xs md:hidden">
+        {
+          nav.map((item) => (
+            <li class="shrink-0">
+              <a href={item.href} class="text-dim hover:text-fg">
+                ./{item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="mt-24 border-t border-line/70">
+      <div
+        class="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-8 font-mono text-xs text-faint sm:flex-row sm:items-center sm:justify-between sm:px-6"
+      >
+        <p>© {new Date().getFullYear()} {person.fullName}</p>
+        <p>
+          {tr("footer.built")}{" "}
+          <a class="text-dim underline-offset-4 hover:text-fg hover:underline" href={`${person.github}/portfolio`}
+            >GitHub</a
+          >.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,303 @@
+---
+import Terminal from "@/components/Terminal.astro";
+import SectionTitle from "@/components/SectionTitle.astro";
+import {
+  certifications,
+  education,
+  experience,
+  languages,
+  person,
+  projects,
+  resume,
+  skills,
+  type Lang,
+} from "@/data/profile";
+import { formatDate, getPosts, postUrl, readingMinutes } from "@/lib/blog";
+import { localePath, t } from "@/i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+const posts = (await getPosts(lang)).slice(0, 3);
+const featured = projects.filter((p) => p.featured);
+const others = projects.filter((p) => !p.featured);
+
+const hash = (s: string) => {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
+  return (h >>> 0).toString(16).padStart(8, "0").slice(0, 7);
+};
+---
+
+<div class="mx-auto max-w-5xl px-4 sm:px-6">
+  <!-- Hero ---------------------------------------------------------------->
+  <section class="pt-14 pb-10 sm:pt-20">
+    <p class="font-mono text-sm text-green">
+      <span class="inline-block size-2 animate-pulse rounded-full bg-green align-middle"></span>
+      <span class="ml-2 align-middle">{experience[0].role[lang]} @ {experience[0].company}</span>
+    </p>
+    <h1 class="mt-4 font-mono text-4xl font-bold tracking-tight text-white sm:text-6xl">
+      {person.name}<span class="cursor-blink text-purple">_</span>
+    </h1>
+    <p class="mt-5 max-w-2xl text-lg leading-8 text-dim">{person.tagline[lang]}</p>
+    <div class="mt-7 flex flex-wrap gap-3 font-mono text-sm">
+      <a
+        href={resume[lang]}
+        download
+        class="rounded-md bg-purple px-4 py-2 font-semibold text-bg transition hover:brightness-110"
+        >↓ {tr("resume.download")}</a
+      >
+      <a href="#contact" class="rounded-md border border-line px-4 py-2 text-fg transition-colors hover:border-purple"
+        >{tr("nav.contact")}</a
+      >
+      <a
+        href={person.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="rounded-md border border-line px-4 py-2 text-fg transition-colors hover:border-purple">GitHub ↗</a
+      >
+    </div>
+  </section>
+
+  <Terminal lang={lang} />
+
+  <!-- About --------------------------------------------------------------->
+  <section id="about" aria-labelledby="about-title" class="pt-24">
+    <SectionTitle id="about" cmd="cat about.md">{tr("section.about")}</SectionTitle>
+    <div class="grid gap-10 md:grid-cols-[1fr_17rem]">
+      <div class="space-y-5 text-[1.05rem] leading-8">
+        {person.about[lang].map((p) => <p>{p}</p>)}
+      </div>
+      <dl class="h-fit space-y-4 rounded-lg border border-line bg-panel p-5 font-mono text-sm">
+        <div>
+          <dt class="text-faint">location</dt>
+          <dd>{person.location[lang]}</dd>
+        </div>
+        <div>
+          <dt class="text-faint">{tr("education.title").toLowerCase()}</dt>
+          <dd>{education.degree[lang]}</dd>
+          <dd class="text-dim">{education.school.split(" — ")[0]} · {education.period[lang]}</dd>
+        </div>
+        <div>
+          <dt class="text-faint">langs</dt>
+          <dd>{languages[lang]}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Experience: a git log --graph -------------------------------------->
+  <section id="experience" aria-labelledby="experience-title" class="pt-24">
+    <SectionTitle id="experience" cmd="git log --graph --oneline career">{tr("section.experience")}</SectionTitle>
+    <ol class="relative ml-2 border-l-2 border-green/60">
+      {
+        experience.map((job) => (
+          <li class="relative pb-10 pl-8 last:pb-2">
+            <span
+              class:list={[
+                "absolute top-1.5 -left-[9px] size-4 rounded-full border-2 border-green bg-bg",
+                job.current && "shadow-[0_0_0_4px_rgb(63_185_80/0.2)]",
+              ]}
+            />
+            <p class="font-mono text-sm">
+              <span class="text-yellow">{hash(job.company + job.role.en)}</span>
+              {job.current && (
+                <span class="text-yellow">
+                  {" ("}
+                  <span class="font-semibold text-cyan">HEAD -&gt; main</span>
+                  {")"}
+                </span>
+              )}
+              <span class="ml-2 text-faint">{job.period[lang]}</span>
+            </p>
+            <h3 class="mt-1 text-lg font-semibold text-white">
+              {job.role[lang]} <span class="font-normal text-dim">@ {job.company}</span>
+            </h3>
+            <ul class="mt-3 space-y-1.5 text-dim">
+              {job.bullets[lang].map((b) => (
+                <li class="flex gap-2">
+                  <span class="text-purple">–</span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+            <ul class="mt-3 flex flex-wrap gap-1.5 font-mono text-xs">
+              {job.tags.map((tag) => (
+                <li class="rounded border border-line px-2 py-0.5 text-dim">{tag}</li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+      <li class="relative pl-8">
+        <span class="absolute top-1.5 -left-[9px] size-4 rounded-full border-2 border-green bg-bg"></span>
+        <p class="font-mono text-sm">
+          <span class="text-yellow">0000001</span>{" "}
+          <span class="text-yellow">(<span class="text-purple">tag: v0.1</span>)</span>
+        </p>
+        <p class="mt-1 text-dim">init: {lang === "pt" ? "primeiro programa em Scratch, aos 14 anos" : "first Scratch program, at age 14"}</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Projects ------------------------------------------------------------>
+  <section id="projects" aria-labelledby="projects-title" class="pt-24">
+    <SectionTitle id="projects" cmd="ls -la ~/projects">{tr("section.projects")}</SectionTitle>
+    <div class="grid gap-5 md:grid-cols-2">
+      {
+        featured.map((p) => (
+          <article class="group flex flex-col rounded-xl border border-line bg-panel p-6 transition-colors hover:border-purple/70">
+            <p class="font-mono text-xs text-faint">
+              ~/projects/<span class="text-cyan">{p.slug}</span>
+              <span class="ml-2 text-yellow">★ {tr("projects.featured")}</span>
+            </p>
+            <h3 class="mt-3 text-xl font-semibold text-white">{p.name}</h3>
+            <p class="mt-2 text-dim">{p.summary[lang]}</p>
+            <ul class="mt-4 space-y-1.5 text-sm">
+              {p.highlights[lang].map((h) => (
+                <li class="flex gap-2">
+                  <span class="text-purple">▸</span>
+                  <span>{h}</span>
+                </li>
+              ))}
+            </ul>
+            <ul class="mt-5 flex flex-wrap gap-1.5 font-mono text-xs">
+              {p.stack.map((s) => (
+                <li class="rounded bg-panel-2 px-2 py-0.5 text-dim">{s}</li>
+              ))}
+            </ul>
+            <div class="mt-auto flex gap-4 pt-6 font-mono text-sm">
+              {p.repo && (
+                <a href={p.repo} target="_blank" rel="noopener noreferrer" class="text-cyan hover:underline">
+                  {tr("projects.repo")} ↗
+                </a>
+              )}
+              {p.demo && (
+                <a href={p.demo} target="_blank" rel="noopener noreferrer" class="text-cyan hover:underline">
+                  {tr("projects.demo")} ↗
+                </a>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+    <ul class="mt-5 divide-y divide-line overflow-hidden rounded-xl border border-line bg-panel font-mono text-sm">
+      {
+        others.map((p) => (
+          <li>
+            <a
+              href={p.repo ?? p.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="grid gap-1 px-5 py-4 transition-colors hover:bg-panel-2 sm:grid-cols-[12rem_1fr_auto] sm:items-center sm:gap-4"
+            >
+              <span class="text-cyan">{p.slug}</span>
+              <span class="font-sans text-dim">{p.summary[lang]}</span>
+              <span class="text-xs text-faint">{p.stack.slice(0, 2).join(" · ")} ↗</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- Stack & certifications --------------------------------------------->
+  <section id="stack" aria-labelledby="stack-title" class="pt-24">
+    <SectionTitle id="stack" cmd="cat package.json | jq .dependencies">{tr("section.skills")}</SectionTitle>
+    <div class="grid gap-5 sm:grid-cols-2">
+      {
+        skills.map((g) => (
+          <div class="rounded-lg border border-line bg-panel p-5">
+            <h3 class="font-mono text-sm text-purple">{g.group[lang]}</h3>
+            <ul class="mt-3 flex flex-wrap gap-2 text-sm">
+              {g.items.map((i) => (
+                <li class="rounded-md border border-line px-2.5 py-1">{i}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+    <div class="mt-5 rounded-lg border border-line bg-panel p-5">
+      <h3 class="font-mono text-sm text-purple">{tr("certs.title")}</h3>
+      <ul class="mt-3 space-y-1 text-sm text-dim">
+        {certifications.map((c) => <li>✓ {c}</li>)}
+        <li>✓ {languages[lang]}</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Blog ---------------------------------------------------------------->
+  <section id="blog" aria-labelledby="blog-title" class="pt-24">
+    <SectionTitle id="blog" cmd="ls ~/blog | head -3">{tr("section.blog")}</SectionTitle>
+    {
+      posts.length === 0 ? (
+        <p class="text-dim">{tr("blog.empty")}</p>
+      ) : (
+        <ul class="space-y-3">
+          {posts.map((post) => (
+            <li>
+              <a
+                href={postUrl(post)}
+                class="block rounded-lg border border-line bg-panel p-5 transition-colors hover:border-purple/70"
+              >
+                <p class="font-mono text-xs text-faint">
+                  {formatDate(post.data.date, lang)} · {readingMinutes(post)} {tr("blog.read")}
+                </p>
+                <h3 class="mt-1 text-lg font-semibold text-white">{post.data.title}</h3>
+                <p class="mt-1 text-dim">{post.data.description}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+    <a href={localePath(lang, "/blog/")} class="mt-4 inline-block font-mono text-sm text-cyan hover:underline"
+      >{tr("blog.all")} →</a
+    >
+  </section>
+
+  <!-- Contact ------------------------------------------------------------->
+  <section id="contact" aria-labelledby="contact-title" class="pt-24">
+    <SectionTitle id="contact" cmd="sudo hire-me">{tr("section.contact")}</SectionTitle>
+    <div class="rounded-xl border border-line bg-panel p-6 sm:p-8">
+      <p class="max-w-xl text-lg text-dim">{tr("contact.text")}</p>
+      <a
+        href={`mailto:${person.email}`}
+        class="mt-5 inline-block font-mono text-lg break-all text-green underline decoration-green/40 underline-offset-4 hover:decoration-green sm:text-2xl"
+        >{person.email}</a
+      >
+      <ul class="mt-6 flex flex-wrap gap-3 font-mono text-sm">
+        <li>
+          <a
+            href={person.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block rounded-md border border-line px-4 py-2 hover:border-purple">LinkedIn ↗</a
+          >
+        </li>
+        <li>
+          <a
+            href={person.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block rounded-md border border-line px-4 py-2 hover:border-purple">GitHub ↗</a
+          >
+        </li>
+        <li>
+          <a href={resume.pt} download class="inline-block rounded-md border border-line px-4 py-2 hover:border-purple"
+            >↓ CV (PT)</a
+          >
+        </li>
+        <li>
+          <a href={resume.en} download class="inline-block rounded-md border border-line px-4 py-2 hover:border-purple"
+            >↓ Résumé (EN)</a
+          >
+        </li>
+      </ul>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,143 @@
+@import "tailwindcss";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/inter";
+
+/* Same palette as the GitHub profile (boot log + git log). */
+@theme {
+  --color-bg: #0b0e14;
+  --color-panel: #11161f;
+  --color-panel-2: #161b22;
+  --color-line: #262d38;
+  --color-fg: #d6dde6;
+  --color-dim: #8b949e;
+  --color-faint: #5b6470;
+  --color-green: #3fb950;
+  --color-purple: #a78bfa;
+  --color-cyan: #39c5cf;
+  --color-yellow: #e3b341;
+  --color-pink: #f778ba;
+  --color-red: #f85149;
+
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-purple) 40%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-purple);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Subtle dotted grid behind everything. */
+.bg-grid {
+  background-image: radial-gradient(color-mix(in srgb, var(--color-fg) 9%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.term-screen {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+/* `crt` command: scanlines + glow over the whole page. */
+html.crt body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  background: repeating-linear-gradient(to bottom, rgb(0 0 0 / 0.22) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+}
+html.crt .term-screen {
+  text-shadow: 0 0 6px color-mix(in srgb, var(--color-green) 55%, transparent);
+}
+
+.cursor-blink {
+  animation: blink 1.05s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Long-form text (blog posts). */
+.prose-post {
+  @apply text-[1.05rem] leading-8 text-fg;
+}
+.prose-post h2 {
+  @apply mt-12 mb-4 font-mono text-xl font-semibold text-fg;
+}
+.prose-post h2::before {
+  content: "## ";
+  color: var(--color-purple);
+}
+.prose-post h3 {
+  @apply mt-8 mb-3 font-mono text-lg font-semibold;
+}
+.prose-post p {
+  @apply my-5;
+}
+.prose-post a {
+  @apply text-cyan underline decoration-cyan/40 underline-offset-4 hover:decoration-cyan;
+}
+.prose-post ul,
+.prose-post ol {
+  @apply my-5 space-y-2 pl-6;
+}
+.prose-post ul {
+  list-style: "– ";
+}
+.prose-post ol {
+  @apply list-decimal;
+}
+.prose-post li::marker {
+  color: var(--color-purple);
+}
+.prose-post strong {
+  @apply font-semibold text-white;
+}
+.prose-post blockquote {
+  @apply my-6 border-l-2 border-purple pl-4 text-dim italic;
+}
+.prose-post :not(pre) > code {
+  @apply rounded bg-panel-2 px-1.5 py-0.5 font-mono text-[0.88em] text-pink;
+}
+.prose-post pre {
+  @apply my-6 overflow-x-auto rounded-lg border border-line p-4 font-mono text-sm leading-6;
+}
+.prose-post table {
+  @apply my-6 w-full border-collapse font-mono text-sm;
+}
+.prose-post th,
+.prose-post td {
+  @apply border border-line px-3 py-2 text-left;
+}
+.prose-post th {
+  @apply bg-panel-2;
+}
