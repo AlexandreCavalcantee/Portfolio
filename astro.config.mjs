@@ -4,7 +4,7 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  site: process.env.SITE_URL ?? "https://portfolio-chi-fawn-38.vercel.app",
+  site: process.env.SITE_URL ?? "https://alexandrecavalcante.vercel.app",
   i18n: {
     locales: ["pt", "en"],
     defaultLocale: "pt",

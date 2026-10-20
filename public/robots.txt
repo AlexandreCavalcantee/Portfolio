@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://portfolio-chi-fawn-38.vercel.app/sitemap-index.xml
+Sitemap: https://alexandrecavalcante.vercel.app/sitemap-index.xml
