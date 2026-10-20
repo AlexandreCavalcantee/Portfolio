@@ -117,7 +117,7 @@ const STRINGS = {
     matrix: "Wake up, Neo... (press any key to exit)",
     exit: "You can't leave a good terminal. But the rest of the site is right below. 👇",
     langSwitch: "Switching to Português…",
-    resume: "Downloading résumé",
+    resume: "Downloading resume",
     cd: "Going to",
     noSection: "no such directory:",
     coding: "coding since age",
@@ -137,7 +137,7 @@ const STRINGS = {
       neofetch: "system info, neofetch style",
       blog: "blog posts",
       contact: "how to reach me",
-      resume: "download my résumé: resume [pt|en]",
+      resume: "download my resume: resume [pt|en]",
       cd: "navigate the site: cd about|experience|projects|blog|contact",
       lang: "switch language: lang pt",
       cube: "a real Rubik's cube 🧩",
@@ -384,7 +384,8 @@ export class Terminal {
     if (seg.color) span.style.color = seg.color;
     if (seg.tile) {
       // A colored square that lines up with the monospace grid (2 columns wide).
-      span.className = "inline-block h-[1.05em] w-[1.6em] translate-y-[0.15em] rounded-[3px] align-baseline";
+      // Exactly 2ch wide so tiles stay on the monospace grid and the cube net lines up.
+      span.className = "inline-block h-[1.05em] w-[2ch] translate-y-[0.15em] rounded-[3px] align-baseline";
       span.style.backgroundColor = seg.tile;
       span.setAttribute("aria-hidden", "true");
     }
@@ -612,7 +613,9 @@ export class Terminal {
     const s = this.cube;
     const row = (f: Face, r: number): Seg[] =>
       s[f].slice(r * 3, r * 3 + 3).flatMap((x): Seg[] => [{ text: "", tile: STICKER[x] }, " "]);
-    const pad = " ".repeat(10);
+    // Each sticker is 2ch + 1 space; the middle row starts with 1 space, so U/D sit
+    // above F after 1 + 9 (the L face) + 1 (gap) columns.
+    const pad = " ".repeat(11);
     const lines: Seg[][] = [];
     for (let r = 0; r < 3; r++) lines.push([pad, ...row("U", r)]);
     for (let r = 0; r < 3; r++) lines.push([" ", ...(["L", "F", "R", "B"] as Face[]).flatMap((f) => [...row(f, r), " "])]);

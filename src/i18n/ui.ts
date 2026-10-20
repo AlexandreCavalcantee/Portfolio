@@ -66,7 +66,7 @@ export const ui = {
     "blog.title": "Blog",
     "blog.description": "Technical notes on backend, Supabase, Postgres and what I learn building SaaS.",
     "contact.text": "Want to talk about a role, a project or just Postgres? Reach out.",
-    "resume.download": "download résumé",
+    "resume.download": "download resume",
     "footer.built": "Built with Astro and Tailwind. Source on",
     "lang.switch": "Português",
     "skip": "Skip to content",

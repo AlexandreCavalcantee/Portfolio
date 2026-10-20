@@ -58,6 +58,19 @@
   background-size: 22px 22px;
 }
 
+/* Soft light that follows the mouse (effects.ts sets --mx/--my). */
+.spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    420px circle at var(--mx, -999px) var(--my, -999px),
+    color-mix(in srgb, var(--color-purple) 9%, transparent),
+    transparent 70%
+  );
+}
+
 .term-screen {
   scrollbar-width: thin;
   scrollbar-color: var(--color-line) transparent;
